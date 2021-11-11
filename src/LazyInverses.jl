@@ -13,5 +13,6 @@ export Inverse, PseudoInverse
 include("inverse.jl")
 include("pseudo_inverse.jl")
 include("algebra.jl")
+include("cholesky.jl") # contains specializations for inverses of Cholesky factorizations
 
 end # LazyInverses
