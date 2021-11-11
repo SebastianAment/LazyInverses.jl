@@ -34,15 +34,18 @@ Base.copy(A::Inverse) = inverse(copy(A.parent))
 
 function Base.AbstractMatrix(Inv::Inverse)
 	A = inv(Inv.parent)
-	if A isa Factorization
-		AbstractMatrix(A)
+	if A isa AbstractMatrix
+		A
 	elseif A isa Number
 		fill(A, (1, 1))
-	else
-		A
+	else # could be Factorization or something else
+		AbstractMatrix(A)
 	end
 end
-Base.Matrix(Inv::Inverse) = Matrix(AbstractMatrix(Inv))
+function Base.Matrix(Inv::Inverse)
+	M = AbstractMatrix(Inv)
+	M isa Matrix ? M : Matrix(M)
+end
 
 # factorize the underlying matrix
 import LinearAlgebra: factorize, det, logdet, logabsdet, dot
@@ -62,12 +65,3 @@ LinearAlgebra.isposdef(A::Inverse) = isposdef(A.parent)
 import LinearAlgebra: diag
 diag(Inv::Inverse) = diag(Matrix(Inv))
 diag(Inv::Inverse{<:Any, <:Factorization}) = diag(inv(Inv.parent))
-
-################################################################################
-import LinearAlgebra: adjoint, transpose, ishermitian, issymmetric
-adjoint(Inv::Inverse) = Inverse(adjoint(Inv.parent))
-tranpose(Inv::Inverse) = Inverse(tranpose(Inv.parent))
-ishermitian(Inv::Inverse) = ishermitian(Inv.parent)
-issymmetric(Inv::Inverse) = issymmetric(Inv.parent)
-symmetric(Inv::Inverse) = Inverse(Symmetric(Inv.parent))
-hermitian(Inv::Inverse) = Inverse(Hermitian(Inv.parent))

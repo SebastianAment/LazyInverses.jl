@@ -1,7 +1,21 @@
 const AbstractInverse{T, M} = Union{Inverse{T, M}, PseudoInverse{T, M}}
 
+import LinearAlgebra: adjoint, transpose
+adjoint(Inv::AbstractInverse) = Adjoint(Inv)
+tranpose(Inv::AbstractInverse) = Transpose(Inv)
+
+import LinearAlgebra: ishermitian, issymmetric
+ishermitian(Inv::AbstractInverse) = ishermitian(Inv.parent)
+issymmetric(Inv::AbstractInverse) = issymmetric(Inv.parent)
+
+symmetric(A) = Symmetric(A)
+symmetric(Inv::Inverse) = Inverse(Symmetric(Inv.parent))
+
+hermitian(A) = Hermitian(A)
+hermitian(Inv::Inverse) = Inverse(Hermitian(Inv.parent))
+
+#################### Basic multiplication and division #########################
 import LinearAlgebra: *, /, \
-# Basic multiplication and division
 *(L::AbstractInverse, B) = L.parent \ B
 \(L::AbstractInverse, B) = L.parent * B
 *(B, L::AbstractInverse) = B / L.parent

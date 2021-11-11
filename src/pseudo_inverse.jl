@@ -2,20 +2,29 @@
 # this implements the right pseudoinverse
 # is defined if A has linearly independent columns
 # ⁻¹, ⁺ syntax
-struct PseudoInverse{T, M<:AbstractMatOrFac{T}} <: Factorization{T}
+struct PseudoInverse{T, M} <: Factorization{T}
     parent::M
+    PseudoInverse(A) = new{eltype(A), typeof(A)}(A)
 end
 
 Base.size(P::PseudoInverse) = size(P.parent')
 Base.size(P::PseudoInverse, k::Integer) = size(P.parent', k::Integer)
 
-function Base.Matrix(P::PseudoInverse, side::Union{Val{:L}, Val{:R}} = Val(:L))
-    A = Matrix(P.parent)
-    if side isa Val{:L}
-        inv(A'A) * A'
+function Base.AbstractMatrix(P::PseudoInverse, side::Union{Val{:L}, Val{:R}} = Val(:L))
+    if P.parent isa Number
+        fill(inv(P.parent), 1, 1)
     else
-        A' * inv(A*A')
+        A = P.parent isa AbstractMatrix ? P.parent : AbstractMatrix(P.parent)
+        if side isa Val{:L}
+            inv(A'A) * A'
+        else
+            A' * inv(A*A')
+        end
     end
+end
+function Base.Matrix(Inv::PseudoInverse)
+	M = AbstractMatrix(Inv)
+	M isa Matrix ? M : Matrix(M)
 end
 # Base.Matrix(P::PseudoInverse) = AbstractMatrix(P)
 Base.Matrix(A::Adjoint{<:Number, <:PseudoInverse}) = Matrix(A.parent)'
@@ -37,9 +46,6 @@ function pseudoinverse(A::AbstractMatOrFac, side::Union{Val{:L}, Val{:R}} = Val(
     end
 end
 
-pseudoinverse(A::Union{Number, Diagonal, UniformScaling}) = inv(A)
+pseudoinverse(A::Union{Number, UniformScaling}) = inv(A)
 pseudoinverse(P::PseudoInverse) = P.parent
 pseudoinverse(P::Inverse) = P.parent
-
-LinearAlgebra.adjoint(P::PseudoInverse) = Adjoint(P)
-LinearAlgebra.transpose(P::PseudoInverse) = Transpose(P)
