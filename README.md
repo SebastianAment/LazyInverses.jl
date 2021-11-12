@@ -1,5 +1,10 @@
 # LazyInverses.jl
-LazyInverses provides a lazy wrapper for a matrix inverse, akin to Adjoint in Julia Base. See the README for example use cases.
+LazyInverses provides a lazy wrapper for a matrix inverse, akin to Adjoint in Julia Base. 
+See the README for example use cases.
+
+A current highlight is 
+the package's implementation of a type of energetic inner product (ternary dot product)
+for which a **7-fold increase in performance** is observed compared to a naïve implementation.
 
 ## Installation
 
