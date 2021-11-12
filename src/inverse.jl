@@ -10,20 +10,23 @@ applications:
 ```
 struct Inverse{T, M} <: Factorization{T} # <: AbstractMatrix{T} ? No, since efficient access to elements is not guaranteed
     parent::M
-    function Inverse(A)
-        if size(A, 1) == size(A, 2)
-			T, M = eltype(A), typeof(A)
-			new{T, M}(A)
-		else
-			throw(DimensionMismatch("Input of size $(size(A)) not square"))
-		end
-    end
+end
+function Inverse(A)
+	if size(A, 1) == size(A, 2)
+		T, M = eltype(A), typeof(A)
+		Inverse{T, M}(A)
+	else
+		throw(DimensionMismatch("Input of size $(size(A)) not square"))
+	end
 end
 Base.size(L::Inverse) = size(L.parent)
 Base.size(L::Inverse, dim::Integer) = size(L.parent, dim)
 
 function inverse end # smart pseudo-constructor, is only lazy if inverse costs more than O(1)
 inverse(Inv::Inverse) = Inv.parent
+function inverse(Inv::Inverse{<:Any, <:AbstractMatrix})
+	all(==(1), size(Inv)) ? Inv.parent[1] : Inv.parent
+end
 inverse(x::Union{Number, UniformScaling}) = inv(x)
 inverse(A::AbstractMatrix) = all(==(1), size(A)) ? inv(A[1]) : Inverse(A)
 inverse(A::Factorization) = Inverse(A)
