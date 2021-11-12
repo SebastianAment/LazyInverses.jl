@@ -2,7 +2,7 @@ using LazyInverses
 using LinearAlgebra
 using BenchmarkTools
 
-n = 1024
+n = 128
 x = randn(n)
 y = randn(n)
 A = randn(n, n)

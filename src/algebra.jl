@@ -85,6 +85,7 @@ import LinearAlgebra: *, /, \
 
 # *(L1::Inverse, L2::Inverse) =  Inverse(L1.parent * L2.parent) IDEA: LazyMatrixProduct to avoid O(n^3) multiply
 # IDEA: could have check for L.parent ≡ B in multiply, to return identity with O(1) operations
+# IDEA: add rdiv!, ldiv! with Number types
 
 ##################### in-place multiplication and solving ######################
 # TODO: tests, mul!, and div! methods involving scalar
