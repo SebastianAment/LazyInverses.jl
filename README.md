@@ -1,4 +1,5 @@
 # LazyInverses.jl
+[![CI](https://github.com/SebastianAment/LazyInverses.jl/actions/workflows/CI.yml/badge.svg)](https://github.com/SebastianAment/LazyInverses.jl/actions/workflows/CI.yml)
 [![codecov](https://codecov.io/gh/SebastianAment/LazyInverses.jl/branch/main/graph/badge.svg?token=6OW6Q25C60)](https://codecov.io/gh/SebastianAment/LazyInverses.jl)
 
 LazyInverses provides a lazy wrapper for a matrix inverse, akin to Adjoint in Julia Base.
