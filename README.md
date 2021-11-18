@@ -1,14 +1,21 @@
 # LazyInverses.jl
-LazyInverses provides a lazy wrapper for a matrix inverse, akin to Adjoint in Julia Base. See the README for example use cases.
+[![codecov](https://codecov.io/gh/SebastianAment/LazyInverses.jl/branch/main/graph/badge.svg?token=6OW6Q25C60)](https://codecov.io/gh/SebastianAment/LazyInverses.jl)
+
+LazyInverses provides a lazy wrapper for a matrix inverse, akin to Adjoint in Julia Base.
+See the README for example use cases.
+
+A current highlight is
+the package's implementation of a type of energetic inner product (ternary dot product)
+for which a **7-fold increase in performance** is observed compared to a naïve implementation.
 
 ## Installation
 
 Simply type `]` follwed by `add LazyInverses` in the REPL.
 
-## Basic Usage 
+## Basic Usage
 
 The package exports two types `Inverse` and `PseudoInverse`,
-and their corresponding "smart" constructors `inverse` and `pinverse`, which 
+and their corresponding "smart" constructors `inverse` and `pinverse`, which
 return the lazy wrappers, unless the input is a number or a 1 x 1 matrix, in which case the inverse is returned directly.
 This first example highlights the lazy behavior of `inverse`, and contrasts it to `inv`:
 ```julia
@@ -64,7 +71,7 @@ println("ternary dot-product multiplication")
   850.760 μs (1 allocation: 8.12 KiB)
 ```
 
-Further, we observe a **speed-up of up to a factor of 2** for a ternary matrix multiplication, 
+Further, we observe a **speed-up of up to a factor of 2** for a ternary matrix multiplication,
 where the middle matrix is an inverse Cholesky factorization.
 ```julia
 k = n

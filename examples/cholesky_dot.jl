@@ -19,7 +19,7 @@ println("ternary dot-product multiplication")
 k = n
 X = randn(k, n)
 Y = randn(n, k)
-println("matrix-matrix-matrix multiplication")
+println("ternary multiplication")
 @btime *($X, $invC, $X')
 @btime *($X, $invC, $Y)
 @btime *($X, $C \ $X')
