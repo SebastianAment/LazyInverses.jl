@@ -38,9 +38,9 @@ A * x ≈ C \ x
 
 ## Use Cases
 
-### Energetic Inner Products
+### Mahalanobis Norms and Energetic Inner Products
 In a number of important models, including any that rely on computations with a multivariate Normal distribution,
-it is necessary to compute an energetic inner product with an *inverse of a positive semi-definite matrix*.
+it is necessary to compute a [Mahalanobis norm](https://en.wikipedia.org/wiki/Mahalanobis_distance) with an *inverse of a positive semi-definite matrix*.
 In order to allow for a particularly efficient implementation of this operation,
 LazyInverses.jl extends the ternary dot product like so:
 ```julia
