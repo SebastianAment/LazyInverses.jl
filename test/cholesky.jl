@@ -1,4 +1,4 @@
-module TestLazyInverses
+module TestInverseCholeskyDot
 using LinearAlgebra
 using LazyInverses
 using Test
@@ -31,4 +31,4 @@ using Test
     end
 end
 
-end # TestLazyInverses
+end # TestInverseCholeskyDot

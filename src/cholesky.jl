@@ -55,7 +55,11 @@ end
 # IDEA: could have non-allocating mul! for this
 # advantage seems to be less pronounced than for dot
 function *(X, A::Inverse{<:Any, <:Union{<:Cholesky, <:CholeskyPivoted}}, Y)
-	C = A.parent
+	inverse_cholesky_mul(X, A.parent, Y)
+end
+
+# saving one matrix solve if X == Y'
+function inverse_cholesky_mul(X, C, Y)
 	if X ≡ Y'
 		Y = copy(Y)
 		if C isa CholeskyPivoted
@@ -67,6 +71,17 @@ function *(X, A::Inverse{<:Any, <:Union{<:Cholesky, <:CholeskyPivoted}}, Y)
 	else
 		*(X, C\Y)
 	end
+end
+
+# IDEA: add CholeskyPivoted
+function diag(A::Inverse{<:Any, <:Cholesky})
+	inverse_cholesky_diag(A.parent)
+end
+
+function inverse_cholesky_diag(C)
+	L = C.U'
+	invL = inv(L)
+	vec(sum(abs2, invL, dims = 1))
 end
 
 # diagonal of ternary product,
@@ -82,13 +97,7 @@ function diag_mul(X, A::Inverse{<:Any, <:Union{<:Cholesky, <:CholeskyPivoted}}, 
 		diag(*(X, C\Y)) # this could be made a little more efficient
 	end
 end
-# IDEA: add CholeskyPivoted
-function diag(A::Inverse{<:Any, <:Cholesky})
-	C = A.parent
-	L = C.U'
-	invL = inv(L)
-	vec(sum(abs2, invL, dims = 1))
-end
+
 ########################## used for CholeskyPivoted code #######################
 function permute_rows!(X::AbstractMatrix, p)
 	for x in eachcol(X) # permuting rows means we have to iterate through columns

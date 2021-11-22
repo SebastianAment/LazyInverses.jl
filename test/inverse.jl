@@ -1,4 +1,4 @@
-module TestInverse
+module TestLazyInverses
 using LinearAlgebra
 using LazyInverses
 using Test
