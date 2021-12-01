@@ -3,17 +3,10 @@ const AdjointInverse{T, M} = Union{Adjoint{T, Inverse{T, M}}, Adjoint{T, PseudoI
 
 import LinearAlgebra: adjoint, transpose
 adjoint(Inv::AbstractInverse) = Adjoint(Inv)
-tranpose(Inv::AbstractInverse) = Transpose(Inv)
 
 import LinearAlgebra: ishermitian, issymmetric
 ishermitian(Inv::AbstractInverse) = ishermitian(Inv.parent)
 issymmetric(Inv::AbstractInverse) = issymmetric(Inv.parent)
-
-symmetric(A) = Symmetric(A)
-symmetric(Inv::Inverse) = Inverse(Symmetric(Inv.parent))
-
-hermitian(A) = Hermitian(A)
-hermitian(Inv::Inverse) = Inverse(Hermitian(Inv.parent))
 
 function Base.AbstractMatrix(A::AdjointInverse)
 	Inv = A.parent
@@ -22,9 +15,12 @@ function Base.AbstractMatrix(A::AdjointInverse)
 end
 function Base.Matrix(A::AdjointInverse)
 	Inv = A.parent
-	B = Inv isa Inverse ? inverse(Inv.parent') : pseudoinverse(Inv.parent')
+	B = pseudoinverse(Inv.parent') # automatically returns Inverse if matrix is square
 	Matrix(B)
 end
+
+import LinearAlgebra: diag
+diag(Inv::Union{AbstractInverse, AdjointInverse}) = diag(AbstractMatrix(Inv))
 
 #################### Basic multiplication and division #########################
 import LinearAlgebra: *, /, \
@@ -88,21 +84,26 @@ import LinearAlgebra: *, /, \
 # IDEA: add rdiv!, ldiv! with Number types
 
 ##################### in-place multiplication and solving ######################
-# TODO: tests, mul!, and div! methods involving scalar
+# TODO: add further tests for mul!, and div! methods (e.g. involving scalar)
 import LinearAlgebra: ldiv!, rdiv!, mul!
-ldiv!(Y, A::AbstractInverse, B) = mul!(Y, A.parent, B)
+function ldiv!(Y::AbstractVecOrMat, A::AbstractInverse, B::AbstractVecOrMat)
+	mul!(Y, A.parent, B)
+end
+# left multiplying with inverse
 mul!(Y, A::AbstractInverse, B) = ldiv!(Y, A.parent, B) # 5 arg?
 function mul!(Y, A::AbstractInverse, B, α::Real)
-	ldiv!(Y, A.parent, B) # 5 arg?
+	mul!(Y, A, B)
 	@. Y *= α
 end
 function mul!(Y, A::AbstractInverse, B, α::Real, β::Real)
+	A.parent isa Matrix && throw("in place mul! only works if this only works if A.parent is Factorization OR a special matrix type like Diagonal, Bidiagonal, etc.")
 	Z = copy(Y) # IDEA: pre-allocate somewhere?
 	mul!(Y, A, B)
 	@. Y = α*Y + β*Z
 	return Y
 end
 
+# right multiplying with inverse
 function mul!(Y, A, B::AbstractInverse)
 	copy!(Y, A)
 	rdiv!(Y, B.parent)
@@ -132,4 +133,4 @@ function rdiv!(A, B::Inverse)
 end
 
 ############################# ternary dot product ##############################
-dot(x, A::Inverse, y) = dot(x, A*y)
+LinearAlgebra.dot(x, A::Inverse, y) = dot(x, A*y)

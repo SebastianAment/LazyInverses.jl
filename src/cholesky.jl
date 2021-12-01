@@ -1,3 +1,4 @@
+import LinearAlgebra: dot
 # we could get away with only one additional allocation if x ≠ y, but
 # this is actually worse for performance and does not allow for parallelism
 function dot(x::AbstractVector, A::Inverse{<:Any, <:Union{<:Cholesky, <:CholeskyPivoted}}, y::AbstractVector)
@@ -73,9 +74,13 @@ function inverse_cholesky_mul(X, C, Y)
 	end
 end
 
-# IDEA: add CholeskyPivoted
 function diag(A::Inverse{<:Any, <:Cholesky})
 	inverse_cholesky_diag(A.parent)
+end
+function diag(A::Inverse{<:Any, <:CholeskyPivoted})
+	C = A.parent
+	d = inverse_cholesky_diag(C)
+	invpermute!(d, C.piv)
 end
 
 function inverse_cholesky_diag(C)

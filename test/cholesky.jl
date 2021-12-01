@@ -28,6 +28,7 @@ using Test
         @test dot(x, invC, y) ≈ dot(x, C\y)
         @test *(X, invC, X') ≈ *(X, C\X')
         @test *(X, invC, Y) ≈ *(X, C\Y)
+        @test diag(invC) ≈ diag(inv(A))
     end
 end
 

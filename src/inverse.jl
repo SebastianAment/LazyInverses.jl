@@ -3,7 +3,7 @@
 converts multiplication into a backsolve and vice versa
 applications:
 - WoodburyIdentity
--  x' A^{-1} y = *(x, Inverse(A), y) can be 2x for cholesky
+-  x' A^{-1} y = *(x, Inverse(A), y) can be > 2x for cholesky (observed up to 8x)
 - Zygote logdet adjoint
 - Laplace's approximation
 - solves with kronecker products
@@ -51,7 +51,7 @@ function Base.Matrix(Inv::Inverse)
 end
 
 # factorize the underlying matrix
-import LinearAlgebra: factorize, det, logdet, logabsdet, dot
+import LinearAlgebra: factorize, det, logdet, logabsdet
 # factorize is used to compute a type which makes it easy to apply the inverse
 # therefore, it should be a no-op on Inverse
 factorize(Inv::Inverse) = Inv
@@ -59,12 +59,11 @@ det(Inv::Inverse) = 1/det(Inv.parent)
 logdet(Inv::Inverse) = -logdet(Inv.parent)
 function logabsdet(Inv::Inverse)
     l, s = logabsdet(Inv.parent)
-    (-l, s)
+    (-l, conj(s))
 end
 LinearAlgebra.isposdef(A::Inverse) = isposdef(A.parent)
 
 # IDEA: allows for stochastic approximation:
 # A Probing Method for Cοmputing the Diagonal of the Matrix Inverse
-import LinearAlgebra: diag
-diag(Inv::Inverse) = diag(Matrix(Inv))
-diag(Inv::Inverse{<:Any, <:Factorization}) = diag(inv(Inv.parent))
+# diag(Inv::Inverse) = diag(Matrix(Inv))
+# diag(Inv::Inverse{<:Any, <:Factorization}) = diag(inv(Inv.parent))
