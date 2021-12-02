@@ -62,8 +62,3 @@ function logabsdet(Inv::Inverse)
     (-l, conj(s))
 end
 LinearAlgebra.isposdef(A::Inverse) = isposdef(A.parent)
-
-# IDEA: allows for stochastic approximation:
-# A Probing Method for Cοmputing the Diagonal of the Matrix Inverse
-# diag(Inv::Inverse) = diag(Matrix(Inv))
-# diag(Inv::Inverse{<:Any, <:Factorization}) = diag(inv(Inv.parent))

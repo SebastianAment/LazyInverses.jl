@@ -11,7 +11,7 @@ issymmetric(Inv::AbstractInverse) = issymmetric(Inv.parent)
 function Base.AbstractMatrix(A::AdjointInverse)
 	Inv = A.parent
 	B = pseudoinverse(Inv.parent') # automatically returns Inverse if matrix is square
-	AbstractMatrix(B)
+	B isa AbstractMatrix ? B : AbstractMatrix(B)
 end
 function Base.Matrix(A::AdjointInverse)
 	Inv = A.parent
@@ -20,6 +20,8 @@ function Base.Matrix(A::AdjointInverse)
 end
 
 import LinearAlgebra: diag
+# IDEA: allows for stochastic approximation:
+# A Probing Method for Cοmputing the Diagonal of the Matrix Inverse
 diag(Inv::Union{AbstractInverse, AdjointInverse}) = diag(AbstractMatrix(Inv))
 
 #################### Basic multiplication and division #########################
