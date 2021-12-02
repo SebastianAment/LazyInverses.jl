@@ -1,6 +1,7 @@
 module TestInverseCholeskyDot
 using LinearAlgebra
 using LazyInverses
+using LazyInverses: diag_mul
 using Test
 
 # testing particularly efficient algebraic operations with inverse(Cholesky)
@@ -20,6 +21,8 @@ using Test
             @test dot(x, invC, y) ≈ dot(x, C\y)
             @test *(X, invC, X') ≈ *(X, C\X')
             @test *(X, invC, Y) ≈ *(X, C\Y)
+            @test diag_mul(X, invC, X') ≈ diag(*(X, invC, X'))
+            @test diag_mul(X, invC, Y) ≈ diag(*(X, invC, Y))
 
             inv_A = inv(A)
             diag_inv_A = diag(inv_A)
@@ -33,6 +36,8 @@ using Test
             @test *(X, invC, X') ≈ *(X, C\X')
             @test *(X, invC, Y) ≈ *(X, C\Y)
             @test diag(invC) ≈ diag_inv_A
+            @test diag_mul(X, invC, X') ≈ diag(*(X, invC, X'))
+            @test diag_mul(X, invC, Y) ≈ diag(*(X, invC, Y))
         end # testset elty
     end # loop elty
 end # testset cholesky

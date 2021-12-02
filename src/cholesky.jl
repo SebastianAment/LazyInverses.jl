@@ -82,25 +82,54 @@ function diag(A::Inverse{<:Any, <:CholeskyPivoted})
 	d = inverse_cholesky_diag(C)
 	invpermute!(d, C.piv)
 end
-
+# computes the diagonal of the inverse of a Cholesky factorization
 function inverse_cholesky_diag(C)
+	issuccess(C) || throw("cannot invert unsuccessful factorization, C.info = $(C.info)")
 	L = C.U'
 	invL = inv(L)
 	vec(sum(abs2, invL, dims = 1))
 end
 
-# diagonal of ternary product,
+
+################## computes diagonal of ternary product ########################
 # IDEA: could dispatch when diag(LazyMatrixProduct{}) is called
-function diag_mul(X, A::Inverse{<:Any, <:Union{<:Cholesky, <:CholeskyPivoted}}, Y)
+function diag_mul(X, A::Inverse{<:Any, <:Cholesky}, Y)
 	C = A.parent
-	LY = similar(Y)
+	inverse_cholesky_diag_mul(X, C, Y)
+end
+function diag_mul(X, A::Inverse{<:Any, <:CholeskyPivoted}, Y)
+	C = A.parent
+	CY = copy(Y)
 	if X ≡ Y'
-		L = C.U'
-		ldiv!(LY, L, Y)
-		vec(sum(abs2, LY, dims = 1)) # IDEA: could we overwrite LY?
+		permute_rows!(CY, C.piv)
+		d = inverse_cholesky_diag_norm!(C, CY)
 	else
-		diag(*(X, C\Y)) # this could be made a little more efficient
+		d = inverse_cholesky_diag_mul!(X, C, CY)
 	end
+end
+# leaves type of C unspecified to work with any implementation of a Cholesky factorization
+# as long as it has a C.U field and allows for a backslash solve, and issuccess
+function inverse_cholesky_diag_mul(X, C, Y)
+	issuccess(C) || throw("cannot invert unsuccessful factorization, C.info = $(C.info)")
+	CY = copy(Y)
+	if X ≡ Y'
+		inverse_cholesky_diag_norm!(C, CY)
+	else
+		inverse_cholesky_diag_mul!(X, C, CY)
+	end
+end
+# WARNING: overwrites Y
+function inverse_cholesky_diag_norm!(C, Y)
+	issuccess(C) || throw("cannot invert unsuccessful factorization, C.info = $(C.info)")
+	L = C.U'
+	ldiv!(L, Y)
+	vec(sum(abs2, Y, dims = 1))
+end
+# WARNING: overwrites Y
+function inverse_cholesky_diag_mul!(X, C, Y)
+	issuccess(C) || throw("cannot invert unsuccessful factorization, C.info = $(C.info)")
+	ldiv!(C, Y)
+	diag(X*Y)
 end
 
 ########################## used for CholeskyPivoted code #######################
