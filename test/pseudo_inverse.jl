@@ -25,7 +25,7 @@ end
         b = randn(elty, m)
         B = randn(elty, m, n)
 
-        # left pseudoinverse
+        # pseudoinverse
         LInv = pseudoinverse(A)
         @test LInv isa PseudoInverse{<:elty}
         ML = Matrix(LInv)
@@ -45,30 +45,8 @@ end
         @test B' * LInv ≈ B' * ML
         @test LInv * B' ≈ ML * B'
 
-        # right pseudoinverse
-        A = randn(elty, m, n)
-        B = randn(elty, n, m)
-        RInv = pseudoinverse(A, Val(:R))
-        @test RInv isa Adjoint{<:elty, <:PseudoInverse{<:elty}}
-        MR = Matrix(RInv)
-        @test MR ≈ pinv(A')'
-
-        scalar_tests(A, MR, RInv)
-
-        # vector operations
-        @test RInv * b ≈ MR * b
-        @test a' * RInv ≈ a' * MR
-
-        # matrix operations
-        @test A * RInv ≈ I(m)
-        @test A * MR ≈ I(m)
-        @test RInv * A ≈ MR * A
-        @test B' * RInv ≈ B' * MR
-        @test RInv * B' ≈ MR * B'
-
         # factorize
         @test factorize(LInv) ≡ LInv
-        @test factorize(RInv) ≡ RInv
 
         # smart constructor
         A = randn(elty, n, n)

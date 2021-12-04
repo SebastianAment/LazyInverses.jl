@@ -18,19 +18,14 @@ function Base.Matrix(Inv::PseudoInverse)
 	M isa Matrix ? M : Matrix(M) # since it could be e.g. a Diagonal
 end
 # Base.Matrix(P::PseudoInverse) = AbstractMatrix(P)
-Base.Matrix(A::Adjoint{<:Number, <:PseudoInverse}) = Matrix(A.parent)'
 LinearAlgebra.factorize(P::PseudoInverse) = P # same reasoning as for Inverse
 
 # smart constructor
 # calls regular inverse if matrix is square
 function pseudoinverse end
 const pinverse = pseudoinverse
-function pseudoinverse(A::AbstractMatOrFac, side::Union{Val{:L}, Val{:R}} = Val(:L))
-    if size(A, 1) == size(A, 2)
-        inverse(A)
-    else
-		side isa Val{:L} ? PseudoInverse(A) : PseudoInverse(A')' # right pinv
-    end
+function pseudoinverse(A::AbstractMatOrFac)
+    size(A, 1) == size(A, 2) ? inverse(A) : PseudoInverse(A)
 end
 pseudoinverse(A::Union{Number, UniformScaling}) = inv(A)
 pseudoinverse(P::PseudoInverse) = P.parent

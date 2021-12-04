@@ -51,9 +51,7 @@ using Test
                         @test x * Inv isa Inverse
                         @test Matrix(x * Inv) ≈ x * M
                         # multiplication of adjoint of Inverse with scalar
-                        @test Inv' * x isa Adjoint{<:Any, <:Inverse}
                         @test Matrix(Inv' * x) ≈ M' * x
-                        @test x * Inv' isa Adjoint{<:Any, <:Inverse}
                         @test Matrix(x * Inv') ≈ x * M'
 
                         # division of Inverse by scalar
@@ -62,9 +60,7 @@ using Test
                         @test x \ Inv isa Inverse
                         @test Matrix(x \ Inv) ≈ x \ M
                         # division of adjoint of Inverse by scalar
-                        @test Inv' / x isa Adjoint{<:Any, <:Inverse}
                         @test Matrix(Inv' / x) ≈ M' / x
-                        @test x \ Inv' isa Adjoint{<:Any, <:Inverse}
                         @test Matrix(x \ Inv') ≈ x \ M'
                     end
 
