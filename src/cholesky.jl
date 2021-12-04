@@ -54,7 +54,8 @@ end
 end
 
 # IDEA: could have non-allocating mul! for this
-# advantage seems to be less pronounced than for dot
+# advantage seems to be less pronounced than for dot, since with matrices,
+# BLAS3 is called and already includes parallelism
 function *(X, A::Inverse{<:Any, <:Union{<:Cholesky, <:CholeskyPivoted}}, Y)
 	inverse_cholesky_mul(X, A.parent, Y)
 end

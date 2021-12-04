@@ -106,15 +106,15 @@ function mul!(Y, A::AbstractInverse, B, α::Real, β::Real)
 end
 
 # right multiplying with inverse
-function mul!(Y, A, B::AbstractInverse)
+function mul!(Y, A, B::Union{AbstractInverse, AdjointInverse})
 	copy!(Y, A)
 	rdiv!(Y, B.parent)
 end
-function mul!(Y, A, B::AbstractInverse, α::Real)
+function mul!(Y, A, B::Union{AbstractInverse, AdjointInverse}, α::Real)
 	mul!(Y, A, B)
 	@. Y *= α
 end
-function mul!(Y, A, B::AbstractInverse, α::Real, β::Real)
+function mul!(Y, A, B::Union{AbstractInverse, AdjointInverse}, α::Real, β::Real)
 	Z = copy(Y) # IDEA: pre-allocate somewhere?
 	mul!(Y, A, B)
 	@. Y = α*Y + β*Z
@@ -130,9 +130,9 @@ function ldiv!(A::Inverse, B)
 	mul!(Y, A.parent, B)
 end
 function rdiv!(A, B::Inverse)
-	Y = zero(B)
+	Y = zero(A)
 	mul!(Y, A, B.parent)
 end
 
 ############################# ternary dot product ##############################
-LinearAlgebra.dot(x, A::Inverse, y) = dot(x, A*y)
+LinearAlgebra.dot(x, A::Union{AbstractInverse, AdjointInverse}, y) = dot(x, A*y)
