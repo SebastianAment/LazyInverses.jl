@@ -44,6 +44,7 @@ end
         @test A * LInv ≈ A * ML
         @test B' * LInv ≈ B' * ML
         @test LInv * B' ≈ ML * B'
+        @test B * LInv' ≈ B * ML'
 
         # factorize
         @test factorize(LInv) ≡ LInv

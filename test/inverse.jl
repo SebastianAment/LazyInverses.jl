@@ -110,6 +110,13 @@ using Test
                         Z = copy(X')
                         @test rmul!(Z, InvFact) ≈ X' * Inv
 
+                        Z = copy(Y)
+                        @test mul!(Z, X, InvFact) ≈ X * InvFact
+                        α, β = randn(2)
+                        @test mul!(Y, X, InvFact, α) ≈ α * (X * InvFact)
+                        Z = copy(Y)
+                        @test mul!(Y, X, InvFact, α, β) ≈ α * (X * InvFact) + β * Z
+
                         @test ldiv!(Y, Inv, X) ≈ Inv \ X
                         Z = copy(X)
                         @test ldiv!(Inv, Z) ≈ Inv \ X
