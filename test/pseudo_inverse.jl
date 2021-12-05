@@ -31,6 +31,9 @@ end
         ML = Matrix(LInv)
         @test ML ≈ pinv(A)
 
+        @test Matrix(adjoint(LInv)) ≈ adjoint(ML)
+        @test Matrix(transpose(LInv)) ≈ transpose(ML)
+
         # scalar operations
         scalar_tests(A, ML, LInv)
 

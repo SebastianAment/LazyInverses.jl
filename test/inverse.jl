@@ -19,7 +19,8 @@ using Test
                     @test Inv*A ≈ (one(elty)*I)(n)
 
                     M = inv(A)
-                    @test adjoint(M) ≈ Matrix(adjoint(Inv))
+                    @test Matrix(adjoint(Inv)) ≈ adjoint(M)
+                    @test Matrix(transpose(Inv)) ≈ transpose(M)
 
                     @test Matrix(Inv') ≈ inv(A)'
                     @test AbstractMatrix(Inv') ≈ inv(A)'

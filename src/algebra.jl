@@ -1,9 +1,11 @@
 const AbstractInverse{T, M} = Union{Inverse{T, M}, PseudoInverse{T, M}}
 
 import LinearAlgebra: adjoint, transpose
-# adjoint(Inv::AbstractInverse) = Adjoint(Inv)
-adjoint(Inv::Inverse) = inverse(adjoint(Inv.parent)) # or inverse(adjoint(Inv.parent)) ?
-adjoint(Inv::PseudoInverse) = pseudoinverse(adjoint(Inv.parent)) # or inverse(adjoint(Inv.parent)) ?
+adjoint(Inv::Inverse) = inverse(adjoint(Inv.parent))
+adjoint(Inv::PseudoInverse) = pseudoinverse(adjoint(Inv.parent))
+
+transpose(Inv::Inverse) = inverse(transpose(Inv.parent))
+transpose(Inv::PseudoInverse) = pseudoinverse(transpose(Inv.parent))
 
 import LinearAlgebra: ishermitian, issymmetric
 ishermitian(Inv::AbstractInverse) = ishermitian(Inv.parent)
