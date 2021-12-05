@@ -78,6 +78,8 @@ using Test
                         @test Inv' \ x ≈ A' * x
                         @test x' * Inv' ≈ x' / A'
                         @test x' / Inv' ≈ x' * A'
+                        y = randn(elty, n)
+                        @test dot(x, Inv, y) ≈ dot(x, A \ y)
                     end
 
                     @testset "matrix algebra" begin
@@ -103,8 +105,16 @@ using Test
                         Y = randn(elty, n, n)
                         Z = copy(Y)
                         @test mul!(Y, InvFact, X, α, β) ≈ α * (InvFact * X) + β * Z
+                        Z = copy(X)
+                        @test lmul!(InvFact, Z) ≈ Inv * X
+                        Z = copy(X')
+                        @test rmul!(Z, InvFact) ≈ X' * Inv
 
                         @test ldiv!(Y, Inv, X) ≈ Inv \ X
+                        Z = copy(X)
+                        @test ldiv!(Inv, Z) ≈ Inv \ X
+                        Z = copy(X')
+                        @test rdiv!(Z, Inv) ≈ X' / Inv
                     end
 
                     # inv
