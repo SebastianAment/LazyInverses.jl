@@ -1,5 +1,3 @@
-const AbstractInverse{T, M} = Union{Inverse{T, M}, PseudoInverse{T, M}}
-
 import LinearAlgebra: adjoint, transpose
 adjoint(Inv::Inverse) = inverse(adjoint(Inv.parent))
 adjoint(Inv::PseudoInverse) = pseudoinverse(adjoint(Inv.parent))
